@@ -2,6 +2,7 @@ import express from "express";
 
 import AppError from "./utils/AppError.js";
 import globalErrorHandler from "./controller/errorController.js";
+import sequelize from "./config/database.js";
 
 const app = express();
 
