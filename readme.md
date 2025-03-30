@@ -14,7 +14,7 @@ Create a `.env` file in the **server** directory and add:
 
 ```env
 CLIENT_BASE_URL=frontend-host
-NODE_ENV=development
+NODE_ENV=development/production
 PORT=5000
 PGHOST=your-db-host
 PGPORT=your-db-port
