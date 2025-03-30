@@ -2,6 +2,39 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
 import AppError from "../utils/AppError.js";
+import { promisify } from "util";
+
+const createSendToken = async (user, res) => {
+    // Generate cookie token and send to user
+
+    const cookieOption = {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+    };
+
+    // cookieOption.secure = true;
+
+    const token = jwt.sign(
+        {
+            id: user.id,
+        },
+        process.env.JWT_SECRET,
+        {
+            expiresIn: 1000 * 60 * 60 * 24 * 7,
+        }
+    );
+
+    const userInfo = {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+    };
+
+    return res.cookie("token", token, cookieOption).status(200).json({
+        message: "Login successful",
+        data: userInfo,
+    });
+};
 
 const register = async (req, res, next) => {
     const { username, email, password } = req.body;
@@ -21,10 +54,11 @@ const register = async (req, res, next) => {
             password: hashedPassword,
         });
 
-        return res.status(201).json({
-            message: "User ceated successfully",
-            data: newUser,
-        });
+        if (!newUser) {
+            return next(new AppError("User not created!", 500));
+        }
+
+        createSendToken(newUser, res);
     } catch (err) {
         return next(err);
     }
@@ -55,41 +89,18 @@ const login = async (req, res, next) => {
             return next(new AppError("Invalid credentials!", 401));
         }
 
-        // Generate cookie token and send to user
-
-        const cookieOption = {
-            httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 24 * 7,
-        };
-
-        if (process.env.NODE_ENV === "production") {
-            cookieOption.secure = true;
-            cookieOption.sameSite = "None";
-        }
-
-        const token = jwt.sign(
-            {
-                id: user.id,
-            },
-            process.env.JWT_SECRET,
-            {
-                expiresIn: 1000 * 60 * 60 * 24 * 7,
-            }
-        );
-
-        const userInfo = {
-            id: user.id,
-            email: user.email,
-            username: user.username,
-        };
-
-        res.cookie("token", token, cookieOption).status(200).json({
-            message: "Login successful",
-            data: userInfo,
-        });
+        createSendToken(user.dataValues, res);
     } catch (err) {
         return next(err);
     }
+};
+
+const logout = (req, res) => {
+    res.clearCookie("token");
+
+    return res.status(200).json({
+        message: "Logout successful.",
+    });
 };
 
 const verifyToken = async (req, res, next) => {
@@ -125,6 +136,7 @@ const authController = {
     register: register,
     login: login,
     verifyToken: verifyToken,
+    logout: logout,
 };
 
 export default authController;

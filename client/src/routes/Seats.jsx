@@ -73,8 +73,8 @@ function Seats() {
             </div>
             <div className="w-full h-full flex flex-col justify-center items-center ">
                 <div className="text-gray-600 font-bold text-lg p-4">
-                    Out of 80 seats available in the bus, <span className="text-red-500">{seatsBookedCount}</span> seats
-                    are already booked and remaining seats are{" "}
+                    Total of 80 seats available in the bus, <span className="text-red-500">{seatsBookedCount}</span>{" "}
+                    seats are already booked and remaining seats are{" "}
                     <span className="text-green-500">{80 - seatsBookedCount}</span>
                 </div>
 

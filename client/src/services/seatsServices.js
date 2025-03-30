@@ -8,9 +8,10 @@ const getAllSeats = async (setSeatsData, setSeatsBookedCount, setError) => {
                 headers: {
                     "Content-Type": "application/json",
                 },
+                credentials: "include",
             });
 
-            const { data } = await response.json();
+            const data = await response.json();
 
             if (response.status !== 200) {
                 setError(data.message);
@@ -19,7 +20,7 @@ const getAllSeats = async (setSeatsData, setSeatsBookedCount, setError) => {
 
             let bookedSeatsCount = 0;
 
-            data?.seats.forEach((seat) => {
+            data?.data?.seats.forEach((seat) => {
                 const row = seat.row_number - 1;
                 const column = seat.seat_number - 1;
                 if (seat.Booking === null) {
@@ -54,6 +55,7 @@ const resetSeats = async (setError) => {
             headers: {
                 "Content-Type": "application/json",
             },
+            credentials: "include",
         });
 
         const data = await response.json();
@@ -77,6 +79,7 @@ const bookSeats = async (seatsToBook, setError) => {
             body: JSON.stringify({
                 seatsToBook,
             }),
+            credentials: "include",
         });
 
         const data = await response.json();

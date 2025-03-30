@@ -12,9 +12,9 @@ const User = sequelize.define(
         username: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true,
+            unique: false,
             validate: {
-                len: [3, 50],
+                len: [1, 50],
             },
         },
         email: {

@@ -13,8 +13,10 @@ dotenv.config({ path: ".env" });
 
 const app = express();
 
+app.use(cookieParser());
+
 const corsOptions = {
-    origin: "*",
+    origin: process.env.CLIENT_BASE_URL,
     credentials: true,
     optionsSuccessStatus: 200,
 };
@@ -22,7 +24,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(express.json());
-app.use(cookieParser());
 
 app.get("/", (req, res) => {
     res.status(200).json({
